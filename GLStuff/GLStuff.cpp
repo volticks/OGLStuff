@@ -511,7 +511,7 @@ void renderLoop(GLFWwindow *window) {
 
   glm::vec3 projDirection(0.7f, 0.01f, 0.5f);
   glm::vec3 startingPos(0.0f, 0.0f, 5.0f);
-  Projectile p(tVaoID, tVboID, (float*)vertices_3d_cube, sizeof(vertices_3d_cube), s1, true, qVas, &Projectile::projectileColFunc, true, t.getId(), 0.01f, projDirection, globalCamera.pos);
+  Projectile p(tVaoID, tVboID, (float*)vertices_3d_cube, sizeof(vertices_3d_cube), s1, true, qVas, &Projectile::projectileColFunc, true, t.getId(), 0.01f, projDirection, globalCamera.pos, true);
 
   // Passing null as indices == use drawArrays instead
   Quad q(qVaoID, qVboID, (float*)vertices_3d_cube, sizeof(vertices_3d_cube), s, qVas, (int*)NULL, 0, qEboID, true, t1ColFunc, true, t.getId());

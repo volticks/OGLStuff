@@ -464,6 +464,27 @@ bool setUniformVarImpl<int>(std::vector<int> const& args, uint32_t loc) {
 		//std::cout << "xd" << std::endl;
 
 
+	// Verts can be silly silly values, ie less than 0.09 but still span the complete range of -1.0f->1.0f (2), this happens when
+	// we supply verts we made in blender or something, so we need to normalize them somehow by bringing them to the same level as the others
+	// so we can use them in comparisons with other verts (like with our collision stuff).
+	/*this->size.x = raiseTo(this->size.x, 0.1f);
+	this->size.y = raiseTo(this->size.y, 0.1f);
+	this->size.z = raiseTo(this->size.z, 0.1f);*/
+
+
+// TODO (dun, see below) we use hardcoded shader var locations here for verts and other attribs, dont do this.
+/*void Verts::deploy() {
+	// Unless we change to vec4, which is unlikely, size param stays at 3.
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, this->getStride(), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	if (this->getVertOff() == 0) return;
+
+	// If we have an offset set other than 0, it means we have another component in our verts. So we need to enable that too.
+	// remember to use a diff vao slot too
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, this->getStride(), (void*)this->getVertOff());
+	glEnableVertexAttribArray(1);
+}*/
 
 ------ in renderLoop
 

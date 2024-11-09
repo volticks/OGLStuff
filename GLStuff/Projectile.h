@@ -20,7 +20,7 @@ public:
 
 	void drawImpl();
 
-	Projectile(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, float vel, glm::vec3 direction, glm::vec3 startingPos);
+	Projectile(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, float vel, glm::vec3 direction, glm::vec3 startingPos, bool gravEnabled = false);
 
 	static void projectileColFunc(Shape& s1, Shape& s2) {
 

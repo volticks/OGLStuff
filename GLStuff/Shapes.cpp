@@ -6,16 +6,16 @@
 
 // Shape implementations
 
-Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, uint32_t stride, uint32_t vertOff, Shader& prog, bool collidable, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID)
-: vaoID(vaoID), vboID(vboID), verts(startingVert, vertLen, stride, vertOff), shader(prog), collidable(collidable), collisionFunc(cFunc), isTextured(isTextured), texID(texID) {
+Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, uint32_t stride, uint32_t vertOff, Shader& prog, bool collidable, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, bool gravEnabled)
+: vaoID(vaoID), vboID(vboID), verts(startingVert, vertLen, stride, vertOff), shader(prog), collidable(collidable), collisionFunc(cFunc), isTextured(isTextured), texID(texID), gravEnabled(gravEnabled) {
 	this->modelMat = glm::mat4(1.0f);
 	this->position = glm::vec3(0.0f);
 	this->boundMax = glm::vec3(0.0f);
 	this->boundMin = glm::vec3(0.0f);
 }
 
-Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID)
-	: vaoID(vaoID), vboID(vboID), verts(startingVert, vertLen, vas), shader(prog), collidable(collidable), collisionFunc(cFunc), isTextured(isTextured), texID(texID) {
+Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, bool gravEnabled)
+	: vaoID(vaoID), vboID(vboID), verts(startingVert, vertLen, vas), shader(prog), collidable(collidable), collisionFunc(cFunc), isTextured(isTextured), texID(texID), gravEnabled(gravEnabled) {
 	// So it can be drawn correctly
 	this->modelMat = glm::mat4(1.0f);
 	this->position = glm::vec3(0.0f);
@@ -70,6 +70,13 @@ void Shape::setupOnce() {
 	Util::handleGLErrs();
 	//glUseProgram(this->getProgID());
 	this->getShader().use();
+
+	// Redundant on projectile instances being managed by projectilemanager
+	if (this->gravEnabled) {
+		this->position.y -= Util::gravPower;
+		std::cout << "(Shape::setupOnce) gravPower: " << Util::gravPower << std::endl;
+	}
+
 	// If we supply a position vector, use it
 	glm::mat4 currModelMat = glm::translate(modelMat, position);
 	this->getShader().setUniformVar("modelMat", &currModelMat);
@@ -330,13 +337,13 @@ Controllable<T, F>::~Controllable() {
 	//std::cout << "DESTRUCTED" << std::endl;
 }
 
-Triangle::Triangle(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, uint32_t stride, uint32_t vertOff, Shader& prog, bool collidable, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID) :
+Triangle::Triangle(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, uint32_t stride, uint32_t vertOff, Shader& prog, bool collidable, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, bool gravEnabled) :
 	Shape(vaoID, vboID, startingVert, vertLen, stride, vertOff, prog, collidable, cFunc, isTextured, texID) {
 	this->initKeyMap();
 }
 
 //Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID)
-Triangle::Triangle(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID) :
+Triangle::Triangle(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, bool gravEnabled) :
 	Shape(vaoID, vboID, startingVert, vertLen, prog, collidable, vas, cFunc, isTextured, texID) {
 	this->initKeyMap();
 }
@@ -444,8 +451,8 @@ int* Quad::getIndices() {
 }
 
 // For VA version.
-Quad::Quad(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, std::vector<VertAttribute> vas, int* indices, uint32_t indiLen, uint32_t eboID, bool collidable, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID) :
-	Shape(vaoID, vboID, startingVert, vertLen, prog, collidable, vas, cFunc, isTextured, texID) {
+Quad::Quad(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, std::vector<VertAttribute> vas, int* indices, uint32_t indiLen, uint32_t eboID, bool collidable, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, bool gravEnabled) :
+	Shape(vaoID, vboID, startingVert, vertLen, prog, collidable, vas, cFunc, isTextured, texID, gravEnabled) {
 	if (indices) {
 		this->indices = (int*)Util::allocAndCopyConts(indices, indiLen);
 	}

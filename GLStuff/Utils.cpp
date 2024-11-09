@@ -9,6 +9,8 @@
 
 using namespace std;
 
+float Util::gravPower = 0.05f;
+
 // Namespace specified before
 string Util::getDataFromFile(const char *fname) {
   ifstream fs(fname);

@@ -168,9 +168,9 @@ inline float raiseTo(float val, float to) {
 class Shape {
 public:
 	using ShapeCollisionFuncT = std::function<void(Shape&, Shape&)>;
-	Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, uint32_t stride, uint32_t vertOff, Shader& prog, bool collidable, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured=false, uint32_t texID = 0);
+	Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, uint32_t stride, uint32_t vertOff, Shader& prog, bool collidable, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured=false, uint32_t texID = 0, bool gravEnabled = false);
 	// TODO, replace above w/this
-	Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0);
+	Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0, bool gravEnabled = false);
 
 	// Make class abstract, also subclasses should provide own implementation anyway.
 	virtual void drawImpl() = 0;
@@ -239,6 +239,7 @@ public:
 	// Check the above bounding box for collisions with s1
 	bool checkBB(Shape& s1);
 	// TODO encapsulate this as part of a texture class eventually.
+	// Another TODO, make this private, use getters & setters
 	uint32_t texID;
 	bool isTextured;
 	// Textures for the shape, if any
@@ -247,6 +248,7 @@ public:
 	glm::vec3 position;
 	glm::mat4 modelMat;
 	glm::vec3 boundMax, boundMin;
+	bool gravEnabled;
 private:
 	uint32_t vaoID, vboID;
 	Verts verts;
@@ -292,9 +294,9 @@ public:
 	//virtual void drawTest();
 	// Inherit Shape constructor
 	//using Shape::Shape;
-	Triangle(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, uint32_t stride, uint32_t vertOff, Shader& prog, bool collidable, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0);
+	Triangle(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, uint32_t stride, uint32_t vertOff, Shader& prog, bool collidable, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0, bool gravEnabled = false);
 	// VA ver
-	Triangle(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0);
+	Triangle(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0, bool gravEnabled = false);
 };
 
 // Shape with 4 sides, composed of 2 triangles
@@ -334,7 +336,7 @@ public:
 	// Constructor, just wraps Shape
 	//Quad(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& s, uint32_t stride, uint32_t vertOff, int* indices, uint32_t indiLen, uint32_t eboID, bool collidable, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0);
 	// For VA stuff
-	Quad(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, std::vector<VertAttribute> vas, int* indices, uint32_t indiLen, uint32_t eboID, bool collidable, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0);
+	Quad(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, std::vector<VertAttribute> vas, int* indices, uint32_t indiLen, uint32_t eboID, bool collidable, ShapeCollisionFuncT cFunc = &Shape::defaultCollision, bool isTextured = false, uint32_t texID = 0, bool gravEnabled = false);
 
 	// Destructor, needs to free some stuff and do some opengl things aswell
 	~Quad();
