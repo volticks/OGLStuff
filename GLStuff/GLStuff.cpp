@@ -10,6 +10,7 @@
 #include "Projectile.h"
 #include "Texture.h"
 #include "SceneObjects.h"
+#include "Player.h"
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -513,6 +514,7 @@ void renderLoop(GLFWwindow *window) {
   glm::vec3 startingPos(0.0f, 0.0f, 5.0f);
   Projectile p(tVaoID, tVboID, (float*)vertices_3d_cube, sizeof(vertices_3d_cube), s1, true, qVas, &Projectile::projectileColFunc, true, t.getId(), 0.01f, projDirection, globalCamera.pos, true);
 
+
   // Passing null as indices == use drawArrays instead
   Quad q(qVaoID, qVboID, (float*)vertices_3d_cube, sizeof(vertices_3d_cube), s, qVas, (int*)NULL, 0, qEboID, true, t1ColFunc, true, t.getId());
   //q.getShader().use(); // need to call use before we can mess w/uniforms
@@ -599,11 +601,13 @@ void renderLoop(GLFWwindow *window) {
   q1.modelMat = wallModel;
 
   ObjectContainer oc(&t2, &t3);
-  //oc.addObject(&t1);
-  //oc.addObject(&q);
+  oc.addObject(&t1);
+  oc.addObject(&q);
   //oc.addObject(&q1);
   //oc.addObject(&p);
   oc.addObject(&w);
+
+  Player plr(globalCamera, q1, oc);
 
   while (!glfwWindowShouldClose(window)) {
 
@@ -638,9 +642,11 @@ void renderLoop(GLFWwindow *window) {
     float cZ = cos(glfwGetTime()) * radius;
     glm::vec3 cameraPos(cX, 0.0f, cZ);
 
-    globalCamera.processKeyInput(currentKeyPressed);
+    //globalCamera.processKeyInput(currentKeyPressed);
+    plr.processInput(currentKeyPressed);
     //std::this_thread::sleep_for(chrono::milliseconds(20));
     assert(globalCamera.setCam(q.getShader()));
+    assert(globalCamera.setCam(q1.getShader()));
     assert(globalCamera.setCam(t1.getShader()));
     //p.direction = globalCamera.direction;
     //assert(globalCamera.setCam(p.getShader()));
@@ -667,7 +673,9 @@ void renderLoop(GLFWwindow *window) {
 
     p.draw();
     //q1.draw();
-    w.draw();
+    //w.draw();
+
+    oc.renderObjects();
 
     //w.findBB(t2, t3);
     //q1.findBB(t2, t3);
@@ -687,7 +695,6 @@ void renderLoop(GLFWwindow *window) {
         go3d(t1, i);
         go3d(q, 5);   
     }
-    //oc.renderObjects();
 
 
     //t1.collidesWith(q);

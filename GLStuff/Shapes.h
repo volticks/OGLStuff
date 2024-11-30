@@ -236,6 +236,8 @@ public:
 	// Using the model matrix and position, find the location of the new bounding box.
 	// Make sure this only gets called AFTER findVertPositions as we need the size computed there
 	void findBB(Shape& s1, Shape& s2);
+	// Does the above, but doesnt draw any shapes.
+	void findBB();
 	// Check the above bounding box for collisions with s1
 	bool checkBB(Shape& s1);
 	// TODO encapsulate this as part of a texture class eventually.
@@ -249,6 +251,7 @@ public:
 	glm::mat4 modelMat;
 	glm::vec3 boundMax, boundMin;
 	bool gravEnabled;
+	float gravPower;
 private:
 	uint32_t vaoID, vboID;
 	Verts verts;

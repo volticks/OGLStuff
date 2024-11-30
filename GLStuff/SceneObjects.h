@@ -104,12 +104,14 @@ public:
 class ObjectContainer {
 public:
 
+    // TODO: Make smart ptr or similar, cant have vec of ref i dont think.
     std::vector<Shape*> objects;
 
     // For drawing our bounding boxes
+    // TODO: Make smart ptr or reference or similar
     Triangle *t1, *t2;
 
-    Shape* checkColliding(Shape &collider) {
+    Shape* checkColliding(Shape &collider, bool drawBounds = true) {
         Shape *collidee = NULL;
         glm::vec3 nill(0.0f);
         for (Shape* obj : objects) {
@@ -122,7 +124,10 @@ public:
                 obj->getVerts().findVertPositions();
             //if (obj->boundMin == obj->boundMax)
             // Where tf is the othe triangle lmfao
-            obj->findBB(*this->t1, *this->t2);
+            if (drawBounds)
+                obj->findBB(*this->t1, *this->t2);
+            else
+                obj->findBB();
 
 
             // Also invokes the collisionFunc for that object, so be careful

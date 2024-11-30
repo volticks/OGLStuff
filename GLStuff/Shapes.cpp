@@ -12,6 +12,7 @@ Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertL
 	this->position = glm::vec3(0.0f);
 	this->boundMax = glm::vec3(0.0f);
 	this->boundMin = glm::vec3(0.0f);
+	this->gravPower = Util::gravPower;
 }
 
 Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, bool gravEnabled)
@@ -21,6 +22,7 @@ Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertL
 	this->position = glm::vec3(0.0f);
 	this->boundMax = glm::vec3(0.0f);
 	this->boundMin = glm::vec3(0.0f);
+	this->gravPower = Util::gravPower;
 }
 
 void Shape::unbind() {
@@ -73,7 +75,7 @@ void Shape::setupOnce() {
 
 	// Redundant on projectile instances being managed by projectilemanager
 	if (this->gravEnabled) {
-		this->position.y -= Util::gravPower;
+		this->position.y -= this->gravPower;
 		std::cout << "(Shape::setupOnce) gravPower: " << Util::gravPower << std::endl;
 	}
 
@@ -248,6 +250,15 @@ void Shape::setShapeCollisionFunc(Shape::ShapeCollisionFuncT func) {
 
 // TODO, draw the points to make sure they are correct, probably use triangles, set position to the final min/max vec3's
 void Shape::findBB(Shape &s1, Shape &s2) {
+	this->findBB();
+
+	std::vector<glm::vec3>pos{ this->boundMin, this->boundMax };
+
+	s1.drawMany(pos);
+}
+
+// Does everything the above does, without drawing any shapes
+void Shape::findBB() {
 	float posX = position.x;
 	float posY = position.y;
 	float posZ = position.z;
@@ -292,16 +303,6 @@ void Shape::findBB(Shape &s1, Shape &s2) {
 	// Now we *should* have the corners as they should be
 	std::cout << "(Shape::findBB) MAX: " << max.x << " " << max.y << " " << max.z << std::endl;
 	std::cout << "(Shape::findBB) MIN: " << min.x << " " << min.y << " " << min.z << std::endl;
-
-	//s1.position = glm::normalize(max);
-	//s2.position = min;
-	//s1.draw();
-	//s2.position = glm::normalize(min);
-	//s2.draw();
-
-	std::vector<glm::vec3>pos{ min, max };
-
-	s1.drawMany(pos);
 
 	this->boundMax = max;
 	this->boundMin = min;

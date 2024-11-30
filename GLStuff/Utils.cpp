@@ -10,6 +10,18 @@
 using namespace std;
 
 float Util::gravPower = 0.05f;
+float Util::parabol_y(float x, float start, float xPower, float yPower){
+    float mid = x + (xPower / 2);
+    float end = x + xPower;
+
+    // replaced c term with 0.1f for laffs innit.
+    float y = (start * x * x) + (xPower * x) + 0.1f;
+
+    // https://math.stackexchange.com/questions/1315260/emulating-a-parabola-in-my-game-for-a-jump
+    //float y = (-yPower / ((mid - start) - (mid - end))) * (x - start) * (x - end);
+
+    return y;
+}
 
 // Namespace specified before
 string Util::getDataFromFile(const char *fname) {
@@ -36,6 +48,7 @@ string Util::getDataFromFile(const char *fname) {
 
   return res;
 }
+
 
 // Namespace specified before
 uint8_t* Util::getDataFromFile(const char* fname, bool useString) {

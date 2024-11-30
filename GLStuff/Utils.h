@@ -9,6 +9,7 @@ namespace Util {
 
 	// When enabled, gravity will pull shapes down the y axis at a predefined rate, that rate is here
 	extern float gravPower;
+	float parabol_y(float x, float start, float xPower, float yPower);
 
 	std::string getDataFromFile(const char *fname);
 	// Same as the above, but for when typical string wont work due to null/badchars
