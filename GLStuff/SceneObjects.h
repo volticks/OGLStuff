@@ -111,8 +111,9 @@ public:
     // TODO: Make smart ptr or reference or similar
     Triangle *t1, *t2;
 
-    Shape* checkColliding(Shape &collider, bool drawBounds = true) {
+    Shape* checkColliding(Shape &collider, bool drawBounds = true, overlap_mask* om = NULL) {
         Shape *collidee = NULL;
+        overlap_mask om1=0;
         glm::vec3 nill(0.0f);
         for (Shape* obj : objects) {
 
@@ -131,11 +132,15 @@ public:
 
 
             // Also invokes the collisionFunc for that object, so be careful
-            if (collider.collidesWith(*obj)) {
+            om1 = collider.collidesWith(*obj);
+            if (om1 == OverlapMask::allColliding) {
                 collidee = obj;
                 break;
             }
         }
+
+        if (om1 != 0 && om != NULL) *om = om1;
+
         return collidee;
     }
 

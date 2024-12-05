@@ -7,12 +7,13 @@ void Player::move(CameraDirection dir) {
 
 Player::Player(Camera& cam, Shape& s, ObjectContainer& oc) : cam(cam), sprite(s), colObjects(oc) {
 	sprite.position = cam.pos;// + glm::vec3(3.0f, 0.0f, -8.0f);
-	this->jumpHeight = 1.0f;
+	this->jumpHeight = 3.0f;
 	this->originalGrav = sprite.gravPower;
 	this->isJumping = false;
 	this->jumpDist = 2.0f;
 	this->isDescending = false;
 	this->jumpBase = 0.0f;
+	this->jumpCounter = 0.0f;
 	// Make sure vert positions are set up.
 	this->sprite.getVerts().findVertPositions();
 }
@@ -28,6 +29,7 @@ void Player::setPlayerSprite() {
 bool Player::processInput(uint32_t key) {
 	// Also need the camera mouse processing stuff in here aswell.
 	bool ret = true;
+	overlap_mask om;
 
 	if (cam.processKeyInput(key)) {
 		// We just wanna skip the switch at the end.
@@ -49,13 +51,14 @@ bool Player::processInput(uint32_t key) {
 		break;
 	}
 
+	// Do collision stuff for our sprite.
+	handleSpriteCollision(&om);
+	handleCollisionState(om);
+
 	// Handle jumping, because this aint just a one time thing
 	if (this->isJumping) {
 		this->handleJumping();
 	}
-
-	// Do collision stuff for our sprite.
-	handleSpriteCollision();
 
 	setPlayerSprite();
 	return ret;
@@ -110,13 +113,38 @@ void Player::handleJumping() {
 	}
 }
 
-bool Player::handleSpriteCollision() {
+bool Player::handleSpriteCollision(overlap_mask *om_out) {
 
 	// Will invoke the sprite collision func.
 	// Auto since unsure when/if this will be changed
+
+	// Will also store details of how we collided.
+	overlap_mask om=0;
 	this->sprite.findBB();
-	auto col = this->colObjects.checkColliding(this->sprite, false);
+	auto col = this->colObjects.checkColliding(this->sprite, false, &om);
+	if (om_out != NULL) *om_out = om;
 	if (col) return true;
 
 	return false;
+}
+
+void Player::handleCollisionState(overlap_mask& om) {
+	bool x = om & OverlapMask::X;
+	bool y = om & OverlapMask::Y;
+	bool z = om & OverlapMask::Z;
+
+	bool aboveGround = cam.pos.y > 0.0f;
+
+	if (om == 0) return;
+	// TODO: Finish
+	if (y && aboveGround && !this->isJumping) {
+		std::cout << "Player::handleCollisionState y: " << cam.pos.y << std::endl;
+		this->isDescending = false;
+		this->isJumping = false;
+	}
+	else if (y && aboveGround) {
+		this->isJumping = true;
+		this->isDescending = true;
+	}
+	//
 }

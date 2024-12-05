@@ -107,7 +107,9 @@ void Shape::defaultCollision(Shape& s, Shape& s1) {
 	std::cout << "Now colliding" << std::endl;
 }
 
-bool Shape::positionOverlaps(Shape& s1) {
+overlap_mask Shape::positionOverlaps(Shape& s1) {
+
+	overlap_mask om=0;
 
 	// If we have bounding box, check against that instead.
 	if (s1.boundMax != s1.boundMin)
@@ -130,26 +132,33 @@ bool Shape::positionOverlaps(Shape& s1) {
 
 	std::cout << "(Shape::positionOverlaps) ourPos.x: " << ourPos.x << "\tourPos.x + thisXSize: " << ourPos.x + thisXSize << std::endl;
 	std::cout << "(Shape::positionOverlaps) sPos.x: " << sPos.x << "\tsPos.x + sXSize: " << sPos.x + sXSize << std::endl;
-	bool x = ourPos.x + thisXSize >= sPos.x - sXSize && sPos.x + sXSize >= ourPos.x - thisXSize;
+	int x = ourPos.x + thisXSize >= sPos.x - sXSize && sPos.x + sXSize >= ourPos.x - thisXSize;
 	//std::cout << "(Shape::positionOverlaps) ourPos.y: " << ourPos.y << "\tourPos.y + thisYSize: " << ourPos.y + thisYSize << std::endl;
 	//std::cout << "(Shape::positionOverlaps) sPos.y: " << sPos.y << "\tsPos.y + sYSize: " << sPos.y + sYSize << std::endl;
-	bool y = ourPos.y + thisYSize >= sPos.y - sYSize && sPos.y + sYSize >= ourPos.y - thisYSize;
+	int y = ourPos.y + thisYSize >= sPos.y - sYSize && sPos.y + sYSize >= ourPos.y - thisYSize;
 	//std::cout << "(Shape::positionOverlaps) ourPos.z: " << ourPos.z << "\tourPos.z + thisZSize: " << ourPos.z + thisZSize << std::endl;
 	//std::cout << "(Shape::positionOverlaps) sPos.z: " << sPos.z << "\tsPos.z + sZSize: " << sPos.z + sZSize << std::endl;
-	bool z = ourPos.z + thisZSize >= sPos.z - sZSize && sPos.z + sZSize >= ourPos.z - thisZSize;
+	int z = ourPos.z + thisZSize >= sPos.z - sZSize && sPos.z + sZSize >= ourPos.z - thisZSize;
 
 
-	return x && y && z;
+	om = 0;
+	om |= z & 1;
+	om <<= 1;
+	om |= y & 1;
+	om <<= 1;
+	om |= x & 1;
+	return om;
 	//returnx;
 }
 
-bool Shape::checkBB(Shape& s1) {
+overlap_mask Shape::checkBB(Shape& s1) {
 
+	overlap_mask om=0b111;
 	std::cout << "(Shape::checkBB) using BB" << std::endl;
 
 	if (s1.boundMax == s1.boundMin) {
 		// TODO: handle case when s1 has no BB
-		return true;
+		return om;
 	}
 
 	glm::vec3 thisSz = this->getVerts().size;
@@ -165,23 +174,32 @@ bool Shape::checkBB(Shape& s1) {
 
 	std::cout << "(Shape::checkBB) xmin " << s1.boundMin.x << "xmax " << s1.boundMax.x << std::endl;
 
-	bool x = thisXMax > s1.boundMin.x && this->position.x - thisSz.z < s1.boundMax.x;
-	bool y = thisYMax > s1.boundMin.y && this->position.y - thisSz.y < s1.boundMax.y;
-	bool z = thisZMax > s1.boundMin.z && this->position.z - thisSz.z < s1.boundMax.z;
+	int x = thisXMax > s1.boundMin.x && this->position.x - thisSz.z < s1.boundMax.x;
+	int y = thisYMax > s1.boundMin.y && this->position.y - thisSz.y < s1.boundMax.y;
+	int z = thisZMax > s1.boundMin.z && this->position.z - thisSz.z < s1.boundMax.z;
 
-	return x && y && z;
+	om = 0;
+	om |= z & 1;
+	om <<= 1;
+	om |= y & 1;
+	om <<= 1;
+	om |= x & 1;
+	return om;
 }
 
-bool Shape::collidesWith(Shape &s) {
+overlap_mask Shape::collidesWith(Shape &s) {
 	// Delegate this to the verts class, since this mainly involves checking vertices.
 	// Another method here allows us to use the vec position to check collision.
-	bool isInside = /*this->getVerts().isInside(s.getVerts()) || */positionOverlaps(s);
+	overlap_mask om = positionOverlaps(s);
+	//bool isInside = /*this->getVerts().isInside(s.getVerts()) || */positionOverlaps(s);
+	bool isInside = (om) == OverlapMask::allColliding;
+	std::cout << "Shape::collidesWith om: " << om << std::endl;
 	if (this->getCollidable() && isInside) {
 		this->setColliding(isInside);
 		// Gotta deref this to pass as a ref.
 		this->collisionFunc(*this, s);
 	}
-	return isInside;
+	return om;
 }
 
 void Shape::setVerts(Verts verts) {

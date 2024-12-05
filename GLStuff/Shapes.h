@@ -16,6 +16,16 @@ enum VAKind {
 	TEXTURE,
 	UNSPEC,
 };
+// Will be used to store x,y,z coords in 3 bits
+// From msb first: y,z,x
+typedef int overlap_mask;
+
+namespace OverlapMask {
+	const overlap_mask allColliding = 0b111;
+	const overlap_mask X = 0b001;
+	const overlap_mask Y = 0b010;
+	const overlap_mask Z = 0b100;
+};
 
 struct VertAttribute {
 	// Offset into the verts array for this vertex attrib
@@ -160,6 +170,8 @@ inline float raiseTo(float val, float to) {
 	return val;
 }
 
+
+
 // Type for collision function in shape.
 //using ShapeCollisionArgT = Shape&;
 //using ShapeCollisionFuncT = std::function<void(Shape&, Shape&)>;
@@ -192,10 +204,10 @@ public:
 	static void defaultCollision(Shape& s, Shape& s1);
 
 	// Using the vec position, check if our shape collides with another
-	bool positionOverlaps(Shape& s1);
+	overlap_mask positionOverlaps(Shape& s1);
 
 	// Does this shape collide with another shape?
-	bool collidesWith(Shape& s);
+	overlap_mask collidesWith(Shape& s);
 
 	bool handleCollision(Shape& s);
 
@@ -239,7 +251,7 @@ public:
 	// Does the above, but doesnt draw any shapes.
 	void findBB();
 	// Check the above bounding box for collisions with s1
-	bool checkBB(Shape& s1);
+	overlap_mask checkBB(Shape& s1);
 	// TODO encapsulate this as part of a texture class eventually.
 	// Another TODO, make this private, use getters & setters
 	uint32_t texID;

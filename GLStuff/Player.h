@@ -49,5 +49,6 @@ public:
 	// Uses our colObjects to check agaisnt a list of objects if our player sprite is
 	// colliding, if it is.... Do something.
 	// Return true on collision and false if not, for if we wanna track that elsewhere.
-	bool handleSpriteCollision();
+	bool handleSpriteCollision(overlap_mask *om_out=NULL);
+	void handleCollisionState(overlap_mask& om);
 };
