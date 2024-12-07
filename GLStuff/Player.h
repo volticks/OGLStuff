@@ -22,14 +22,22 @@ public:
 	float jumpDist;
 	// Stores the original gravity from the sprite
 	float originalGrav;
-	// Are we currently in the air after a jump?
-	bool isJumping;
 	// Offset of y from where we started jumping
 	float jumpCounter;
 	// Where should we end up at the end of the jump?
 	float jumpBase;
+
+	// Are we currently in the air after a jump?
+	bool isJumping;
 	// When we reach the peak of the arc, need to start descending.
 	bool isDescending;
+	// Did we request a jump? Used to store the jump state between calls.
+	bool jumpRequested;
+	// Last non-colliding position of camera
+	glm::vec3 oldCamPos;
+	// Last non-colliding position of sprite
+	glm::vec3 oldSpritePos;
+
 
 	Player(Camera& cam, Shape& s, ObjectContainer& oc);
 
@@ -37,6 +45,8 @@ public:
 	void move(CameraDirection dir);
 
 	void setPlayerSprite();
+
+	void setPos();
 
 	// Returns true for processed successfully, false for no idea what this is innit.
 	bool processInput(uint32_t key);

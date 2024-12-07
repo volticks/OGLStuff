@@ -76,7 +76,7 @@ void Shape::setupOnce() {
 	// Redundant on projectile instances being managed by projectilemanager
 	if (this->gravEnabled) {
 		this->position.y -= this->gravPower;
-		std::cout << "(Shape::setupOnce) gravPower: " << Util::gravPower << std::endl;
+		std::cout << "(Shape::setupOnce) gravPower: " << this->gravPower << std::endl;
 	}
 
 	// If we supply a position vector, use it

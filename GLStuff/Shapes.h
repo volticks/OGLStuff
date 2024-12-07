@@ -16,10 +16,10 @@ enum VAKind {
 	TEXTURE,
 	UNSPEC,
 };
+
 // Will be used to store x,y,z coords in 3 bits
 // From msb first: y,z,x
 typedef int overlap_mask;
-
 namespace OverlapMask {
 	const overlap_mask allColliding = 0b111;
 	const overlap_mask X = 0b001;
