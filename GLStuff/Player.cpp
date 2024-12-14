@@ -8,6 +8,7 @@ void Player::move(CameraDirection dir) {
 Player::Player(Camera& cam, Shape& s, ObjectContainer& oc) : cam(cam), sprite(s), colObjects(oc) {
 	cam.pos.x -= 5.0f;
 	sprite.position = cam.pos;// + glm::vec3(3.0f, 0.0f, -8.0f);
+
 	this->jumpHeight = 3.0f;
 	this->originalGrav = sprite.gravPower;
 	this->isJumping = false;
@@ -16,10 +17,16 @@ Player::Player(Camera& cam, Shape& s, ObjectContainer& oc) : cam(cam), sprite(s)
 	this->jumpBase = 0.0f;
 	this->jumpCounter = 0.0f;
 	this->jumpRequested = false;
-	this->oldCamPos = glm::vec3(0.0f);
 	this->oldSpritePos = glm::vec3(0.0f);
 	// Make sure vert positions are set up.
 	this->sprite.getVerts().findVertPositions();
+	// Make sure we only store the size AFTER we compute the size in findVertPositions lol.
+	this->oldSpriteSz = sprite.getVerts().getSize();
+
+	// TODO: translate sprite model matrix so we are above our player.
+	sprite.modelMat = glm::translate(sprite.modelMat, glm::vec3(0.0f, 2.0f, 0.0f));
+
+	this->shrink(0.25f, 1.0f, 0.25f);
 }
 
 void Player::setPlayerSprite() {
@@ -42,8 +49,9 @@ bool Player::processInput(uint32_t key) {
 	overlap_mask om;
 
 	if (cam.processKeyInput(key)) {
-		// We just wanna skip the switch at the end.
+		// If we moved, we should update the sprite position to mirror that.
 		this->sprite.position = this->cam.pos;
+		// We just wanna skip the switch at the end.
 		key = 0;
 	}
 
@@ -69,10 +77,8 @@ bool Player::processInput(uint32_t key) {
 	}
 	handleCollisionState(om);
 
-	// Handle jumping, because this aint just a one time thing
-	if (this->isJumping) {
-		this->handleJumping();
-	}
+	// Handle jumping (if we are jumping), because this aint just a one time thing
+	this->handleJumping();
 
 	setPlayerSprite();
 	return ret;
@@ -142,10 +148,6 @@ bool Player::handleSpriteCollision(overlap_mask *om_out) {
 }
 
 void Player::handleCollisionState(overlap_mask& om) {
-	bool x = om & OverlapMask::X;
-	bool y = om & OverlapMask::Y;
-	bool z = om & OverlapMask::Z;
-
 	bool all = om == OverlapMask::allColliding;
 
 	bool aboveGround = cam.pos.y > 0.0f;
@@ -163,22 +165,30 @@ void Player::handleCollisionState(overlap_mask& om) {
 		std::cout << "Player::handleCollisionState y: " << cam.pos.y << std::endl;
 		this->isDescending = false;
 		this->isJumping = false;
-		//this->sprite.gravPower = 0.1f;
 	}
 	// Not colliding, but above the ground
 	else if (aboveGround && !this->isJumping) {
 		std::cout << "Player::handleCollisionState falling y: " << cam.pos.y << std::endl;
 		this->isDescending = true;
 		this->isJumping = true;
-		//this->sprite.gravPower = this->originalGrav;
 	}
 	// Our job here is done; we have allowed our ascent.
 	this->jumpRequested = false;
 
 	//// Walking into objects collision
-	// TODO: Stop us from walking forwards (or backwards) into direction of collision
 	if (all){
 		setPos();
-		//this->cam.pos = this->oldPos;
 	}
+}
+
+// Shrinks our sprite size down a bit by the provided magnitutes
+void Player::shrink(float x, float y, float z) {
+	glm::vec3 spriteSz = this->sprite.getVerts().getSize();
+	this->oldSpriteSz = spriteSz;
+	spriteSz *= glm::vec3(x, y, z);
+	this->sprite.getVerts().setSize(spriteSz);
+}
+
+void Player::unshrink() {
+	this->sprite.getVerts().setSize(this->oldSpritePos);
 }

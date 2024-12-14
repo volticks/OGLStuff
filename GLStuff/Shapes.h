@@ -73,8 +73,10 @@ private:
 	// Vertex attrib indexes
 	int vertsIdx = -1, colourIdx = -1, texIdx = -1;
 
-public:
+	// Effective size of the shape as computed from the verts.
 	glm::vec3 size;
+
+public:
 
 	// Constructors
 	Verts(float* newVerts, uint32_t vLen, uint32_t stride, uint32_t vertOff);
@@ -150,6 +152,10 @@ public:
 	void setVertsCopied(bool b);
 
 	void setVas(std::vector<VertAttribute> vs);
+
+	glm::vec3& getSize();
+
+	void setSize(glm::vec3 newSz);
 
 	// Return a ref so we dont copy it
 	std::vector<VertAttribute>& getVas();

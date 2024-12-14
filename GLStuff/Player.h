@@ -33,8 +33,8 @@ public:
 	bool isDescending;
 	// Did we request a jump? Used to store the jump state between calls.
 	bool jumpRequested;
-	// Last non-colliding position of camera
-	glm::vec3 oldCamPos;
+	// Old sprite size
+	glm::vec3 oldSpriteSz;
 	// Last non-colliding position of sprite
 	glm::vec3 oldSpritePos;
 
@@ -61,4 +61,9 @@ public:
 	// Return true on collision and false if not, for if we wanna track that elsewhere.
 	bool handleSpriteCollision(overlap_mask *om_out=NULL);
 	void handleCollisionState(overlap_mask& om);
+
+	// Shrinks our sprite size down a bit by the provided magnitutes
+	void shrink(float x, float y, float z);
+	// Unshrinks us, not used yet.
+	void unshrink();
 };

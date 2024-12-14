@@ -119,13 +119,16 @@ overlap_mask Shape::positionOverlaps(Shape& s1) {
 	glm::vec3 sPos = s1.position;
 
 	
-	float thisXSize = this->getVerts().size.x;
-	float thisYSize = this->getVerts().size.y;
-	float thisZSize = this->getVerts().size.z;
+	glm::vec3 sz = this->getVerts().getSize();
+	glm::vec3 s1_sz = s1.getVerts().getSize();
 
-	float sXSize = raiseTo(s1.getVerts().size.x, 0.1f);
-	float sYSize = raiseTo(s1.getVerts().size.y, 0.1f);
-	float sZSize = raiseTo(s1.getVerts().size.z, 0.1f);
+	float thisXSize = sz.x;
+	float thisYSize = sz.y;
+	float thisZSize = sz.z;
+
+	float sXSize = raiseTo(s1_sz.x, 0.1f);
+	float sYSize = raiseTo(s1_sz.y, 0.1f);
+	float sZSize = raiseTo(s1_sz.z, 0.1f);
 	
 	// Had to add and subtract the sizes from the positions because as it turns out the positions are at the opposite ends 
 	// to where i thought they were, this means instead of just being able to take sPos.x to get the lhs X i have to ADD the size to get
@@ -161,7 +164,7 @@ overlap_mask Shape::checkBB(Shape& s1) {
 		return om;
 	}
 
-	glm::vec3 thisSz = this->getVerts().size;
+	glm::vec3 thisSz = this->getVerts().getSize();
 
 	float thisX = this->position.x;
 	float thisXMax = thisX + thisSz.x;
@@ -270,7 +273,7 @@ void Shape::setShapeCollisionFunc(Shape::ShapeCollisionFuncT func) {
 void Shape::findBB(Shape &s1, Shape &s2) {
 	this->findBB();
 
-	std::vector<glm::vec3>pos{ this->boundMin, this->boundMax };
+	std::vector<glm::vec3> pos{ this->boundMin, this->boundMax };
 
 	s1.drawMany(pos);
 }
@@ -281,17 +284,19 @@ void Shape::findBB() {
 	float posY = position.y;
 	float posZ = position.z;
 
+	glm::vec3 sz = this->getVerts().getSize();
+
 	// https://gamedev.stackexchange.com/questions/20703/bounding-box-of-a-rotated-rectangle-2d
 	// Values with no distortion
-	float maxXSize = this->getVerts().size.x + posX;
-	float maxYSize = this->getVerts().size.y + posY;
-	float maxZSize = this->getVerts().size.z + posZ;
+	float maxXSize = sz.x + posX;
+	float maxYSize = sz.y + posY;
+	float maxZSize = sz.z + posZ;
 
 	// Not sure this is right
-	float minXSize = posX - this->getVerts().size.x;
-	float minYSize = posY - this->getVerts().size.y;
+	float minXSize = posX - sz.x;
+	float minYSize = posY - sz.y;
 	//float minZSize = posZ - this->getVerts().size.z;
-	float minZSize = posZ - this->getVerts().size.z;
+	float minZSize = posZ - sz.z;
 
 	// Below need to be mat4 as we cant multiply a mat4 by vec3 (column issue)
 	// Top left, at pos 0.
@@ -884,4 +889,12 @@ int Verts::getVertsIdx() {
 }
 int Verts::getTexIdx() {
 	return this->texIdx;
+}
+
+glm::vec3& Verts::getSize() {
+	return this->size;
+}
+
+void Verts::setSize(glm::vec3 newSz) {
+	this->size = newSz;
 }

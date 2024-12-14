@@ -121,7 +121,7 @@ public:
             if (!obj->getCollidable()) continue;
 
             // First, make sure we have the vert positions and sizes figured out and then have a bounding box figured out
-            if (obj->getVerts().size != nill)
+            if (obj->getVerts().getSize() != nill)
                 obj->getVerts().findVertPositions();
             //if (obj->boundMin == obj->boundMax)
             // Where tf is the othe triangle lmfao

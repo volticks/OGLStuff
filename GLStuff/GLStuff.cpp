@@ -539,6 +539,11 @@ void renderLoop(GLFWwindow *window) {
 
   // Since w and floorPlane both share the same shader must remember to reset any uniforms BEFORE drawing the next.
   Wall w(qVaoID, qVboID, (float*)strange_vertices, sizeof(strange_vertices), s, qVas, true, false, 0, NULL);
+  // 
+  Wall w1(qVaoID, qVboID, (float*)strange_vertices, sizeof(strange_vertices), s, qVas, true, false, 0, NULL);
+  w1.modelMat = glm::rotate(w1.modelMat, glm::radians(90.0f), yAxis);
+  w1.modelMat = glm::translate(w1.modelMat, glm::vec3(0.0f, -60.0f, 0.0f));
+  // 
   Wall floorPlane(qVaoID, qVboID, (float*)strange_vertices, sizeof(strange_vertices), s, qVas, false, false, 0, NULL);
   floorPlane.modelMat = glm::rotate(floorPlane.modelMat, glm::radians(90.0f), yAxis);
   floorPlane.modelMat = glm::scale(floorPlane.modelMat, glm::vec3(50.0f, 0.01f, 200.0f));
@@ -593,12 +598,13 @@ void renderLoop(GLFWwindow *window) {
   glm::mat4 wallModel(1.0f);
   glm::mat4 wm1(1.0f);
   //wm1 = glm::scale(wm1, glm::vec3(2.0f, 2.0f, 2.0f));
+  q1.modelMat = wallModel;
 
   wallModel = glm::scale(id, glm::vec3(2.0f, 2.0f, 2.0f));
+  //q1.modelMat = wallModel;
   wallModel = glm::translate(wallModel, glm::vec3(-0.5f, 1.0f, 1.0f));
   w.modelMat = wallModel;
   // Wanna rotate this a lil bit too.
-  q1.modelMat = wallModel;
 
   ObjectContainer oc(&t2, &t3);
   oc.addObject(&t1);
@@ -606,6 +612,7 @@ void renderLoop(GLFWwindow *window) {
   //oc.addObject(&q1);
   //oc.addObject(&p);
   oc.addObject(&w);
+  //oc.addObject(&w1);
 
   Player plr(globalCamera, q1, oc);
 
