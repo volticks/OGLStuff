@@ -139,6 +139,7 @@
     <ClCompile Include="GLStuff.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="SceneObjects.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="stb_image.cpp" />

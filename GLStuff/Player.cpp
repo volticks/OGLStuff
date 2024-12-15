@@ -140,11 +140,11 @@ bool Player::handleSpriteCollision(overlap_mask *om_out) {
 	overlap_mask om=0;
 	this->sprite.findBB();
 	// Auto since unsure when/if this will be changed
-	auto col = this->colObjects.checkColliding(this->sprite, false, &om);
+	this->colObjects.checkColliding(this->sprite, false, &om);
 	if (om_out != NULL) *om_out = om;
-	if (col) return true;
+	//if (col) return true;
 
-	return false;
+	return om == OverlapMask::allColliding;
 }
 
 void Player::handleCollisionState(overlap_mask& om) {

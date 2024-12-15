@@ -604,14 +604,13 @@ void renderLoop(GLFWwindow *window) {
   //q1.modelMat = wallModel;
   wallModel = glm::translate(wallModel, glm::vec3(-0.5f, 1.0f, 1.0f));
   w.modelMat = wallModel;
-  // Wanna rotate this a lil bit too.
 
   ObjectContainer oc(&t2, &t3);
-  oc.addObject(&t1);
-  oc.addObject(&q);
+  oc.addObject(t1);
+  oc.addObject(q);
   //oc.addObject(&q1);
   //oc.addObject(&p);
-  oc.addObject(&w);
+  oc.addObject(w);
   //oc.addObject(&w1);
 
   Player plr(globalCamera, q1, oc);
