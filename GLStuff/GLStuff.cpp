@@ -220,7 +220,7 @@ const glm::vec3 cubePositions[] = {
     glm::vec3(1.5f,  0.2f, -1.5f),
     glm::vec3(-1.3f,  1.0f, -1.5f)
 };
-void go3d(Shape &s, int i) {
+void drawManyShapesAndRotate(Shape &s, int i) {
     assert(i < sizeof(cubePositions) / sizeof(cubePositions[0]));
     // Model matrix, transform to world space 
     //// Start as identity, then apply transformations from there
@@ -485,6 +485,7 @@ void renderLoop(GLFWwindow *window) {
       // out so if ur seeing errs thats why.
       if (!s1.getShader().setUniformVar("doTexturing", std::vector<int>{0})) std::cout << "(Colfunc) cant disable texturing" << std::endl;
       if (!s2.getShader().setUniformVar("useUniformColours", std::vector<int>{1})) std::cout << "(Colfunc) cant set useUniformColours" << std::endl;
+      //s2.colour = args;
       if (!s2.getShader().setUniformVar("aColour", args)) std::cout << "(Colfunc) cant set aColour" << std::endl;
       };
 
@@ -601,17 +602,20 @@ void renderLoop(GLFWwindow *window) {
   q1.modelMat = wallModel;
 
   wallModel = glm::scale(id, glm::vec3(2.0f, 2.0f, 2.0f));
-  //q1.modelMat = wallModel;
-  wallModel = glm::translate(wallModel, glm::vec3(-0.5f, 1.0f, 1.0f));
+  wallModel = glm::translate(wallModel, glm::vec3(-0.5f, 0.5f, 1.0f));
   w.modelMat = wallModel;
+  // Put the second wall somewhere else.
+  wallModel = glm::translate(wallModel, glm::vec3(-0.5f, 1.0f, 1.0f));
+  w1.modelMat = wallModel;
 
+  //q1.gravEnabled = true;
   ObjectContainer oc(&t2, &t3);
   oc.addObject(t1);
   oc.addObject(q);
   //oc.addObject(&q1);
   //oc.addObject(&p);
   oc.addObject(w);
-  //oc.addObject(&w1);
+  oc.addObject(w1);
 
   Player plr(globalCamera, q1, oc);
 
@@ -664,11 +668,13 @@ void renderLoop(GLFWwindow *window) {
     pc.drawProjectiles(oc);
     // As this is the projectile template object, this will have the position vec of the projectile fired most recently, meaning it is the most recent projectile.
     // As such we can do collision checking on it.
-    w.modelMat = wm1;
+    //w.modelMat = wm1;
     //p.collidesWith(w);
     //oc.checkColliding(p);
-    p.collidesWith(t1);
-    p.collidesWith(q1);
+    
+    // ....
+    //p.collidesWith(t1);
+    //p.collidesWith(q1);
 
     if (!p.getShader().setUniformVar("aColour", std::vector<float>{ 255.0f, 4.0f, 4.0f }))
         std::cout << "(Projectile) colour failed" << std::endl;
@@ -698,16 +704,9 @@ void renderLoop(GLFWwindow *window) {
     t1.getShader().setUniformVar("useUniformColours", std::vector<int>{0});
 
     for (int i = 0; i < 10; i++) {
-        go3d(t1, i);
-        go3d(q, 5);   
+        drawManyShapesAndRotate(t1, i);
+        drawManyShapesAndRotate(q, 5);
     }
-
-
-    //t1.collidesWith(q);
-    //q.collidesWith(t1);
-    //t1.processKeyInput(currentKeyPressed);
-    //q.processKeyInput(currentKeyPressed);
-
     //q.draw();
     currentKeyPressed = 0;
     // Swap back buffer to front buffer TODO explain this

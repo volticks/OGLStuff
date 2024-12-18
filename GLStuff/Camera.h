@@ -208,7 +208,6 @@ public:
 
 		// Make sure length is 1
 		targ = glm::normalize(direction);
-		//setCam()
 	}
 
 	void zoom(float thresh) {
@@ -235,9 +234,5 @@ public:
 
 		// If not fly, we shoudnt be able to walk up and down the y axis at will.
 		if (!canFly) this->pos.y -= (this->targ.y * step);
-		
-
 	}
-
-
 };

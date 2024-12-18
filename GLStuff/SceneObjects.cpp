@@ -58,6 +58,9 @@ static void wallCollisionFunc(Shape& s1, Shape& s2) {
     std::vector<float> args{ (float)s1.getVerts().getVerts()[0], (float)s1.getVerts().getVerts()[1], (float)s1.getVerts().getVerts()[2] };
     // Try to set the uniform if it exists - if uniform isnt used to make any meaningful diff gl will optimize it
     // out so if ur seeing errs thats why.
+    if (!s1.getShader().setUniformVar("doTexturing", std::vector<int>{0})) std::cout << "(Colfunc) cant disable texturing" << std::endl;
+    if (!s2.getShader().setUniformVar("useUniformColours", std::vector<int>{1})) std::cout << "(Colfunc) cant set useUniformColours" << std::endl;
+    //s1.colour = args;
     if (!s1.getShader().setUniformVar("aColour", args)) std::cout << "huh" << std::endl;
 }
 

@@ -8,6 +8,8 @@ void Player::move(CameraDirection dir) {
 Player::Player(Camera& cam, Shape& s, ObjectContainer& oc) : cam(cam), sprite(s), colObjects(oc) {
 	cam.pos.x -= 5.0f;
 	sprite.position = cam.pos;// + glm::vec3(3.0f, 0.0f, -8.0f);
+	// Just to make sure
+	sprite.gravEnabled = true;
 
 	this->jumpHeight = 3.0f;
 	this->originalGrav = sprite.gravPower;
@@ -36,7 +38,7 @@ void Player::setPlayerSprite() {
 	this->sprite.draw();
 }
 
-
+// Need the camera position to follow the sprite position as that will be used for collision checking.
 void Player::setPos() {
 	this->sprite.position = oldSpritePos;
 	this->cam.pos = oldSpritePos;
@@ -87,7 +89,7 @@ bool Player::processInput(uint32_t key) {
 // "Jumps" in the direction the camera is facing
 void Player::jump() {
 	std::cout << "(Player::jump) Jumping innit" << std::endl;
-	originalGrav = sprite.gravPower;
+	//originalGrav = sprite.gravPower;
 	//sprite.gravPower = -sprite.gravPower;
 
 	// Parabol stuff
@@ -105,6 +107,8 @@ void Player::jump() {
 	this->isDescending = false;
 	// Indicate we have requested a jump
 	this->jumpRequested = true;
+	// Also reset gravity when we try to jump so we have the original jumping POWA.
+	this->sprite.gravPower = this->originalGrav;
 }
 
 void Player::handleJumping() {
@@ -130,7 +134,8 @@ void Player::handleJumping() {
 	if (this->cam.pos.y <= 0.0f) this->cam.pos.y = 0.0f;
 	this->isJumping = false;
 	this->isDescending = false;
-	
+	// Reset the grav power back to what it should be too
+	this->sprite.gravPower = this->originalGrav;
 }
 
 bool Player::handleSpriteCollision(overlap_mask *om_out) {
@@ -152,33 +157,44 @@ void Player::handleCollisionState(overlap_mask& om) {
 
 	bool aboveGround = cam.pos.y > 0.0f;
 
-	// No collision whatsoever
-	if (om == 0)
-		return;
+	// No collision whatsoever <---- prolly redundant since even if theres no collision we still need to handle jumping
+	//if (om == 0)
+	//	return;
 
 	std::cout << "Player::handleCollisionState om: " << om << std::endl;
 
-	//// Falling and jumping logic: TODO: What about banging our heads on the ceiling???
+	//// Falling and jumping logic: TODO: What about banging our heads on the ceiling??? <-- Handled automatically it seems
 	// We are above ground and colliding, meaning we have fallen onto something AND are not trying
 	// to jump off it.
 	if (aboveGround && all && !this->jumpRequested) {
 		std::cout << "Player::handleCollisionState y: " << cam.pos.y << std::endl;
+
+		// If we fall onto an object, nerf our gravity so we arent bouncing on top like a creature
+		this->sprite.gravPower = this->originalGrav / 8.0f;
+
 		this->isDescending = false;
 		this->isJumping = false;
 	}
 	// Not colliding, but above the ground
 	else if (aboveGround && !this->isJumping) {
 		std::cout << "Player::handleCollisionState falling y: " << cam.pos.y << std::endl;
+
+		// Slowly return our gravity to its original value (from what it was changed to above) as we fall
+		float gravInc = (this->originalGrav / 8.0f);
+		this->sprite.gravPower = std::fmin((this->sprite.gravPower + gravInc), this->originalGrav);
+
 		this->isDescending = true;
 		this->isJumping = true;
 	}
 	// Our job here is done; we have allowed our ascent.
 	this->jumpRequested = false;
 
-	//// Walking into objects collision
-	if (all){
-		setPos();
-	}
+	//// Now we need to update the position to what it was pre collision, if we did collide.
+	if (!all) return;
+	/*this->jumpRequested = true;
+	this->isJumping = false;
+	this->isDescending = true;*/
+	setPos();
 }
 
 // Shrinks our sprite size down a bit by the provided magnitutes
@@ -190,5 +206,5 @@ void Player::shrink(float x, float y, float z) {
 }
 
 void Player::unshrink() {
-	this->sprite.getVerts().setSize(this->oldSpritePos);
+	this->sprite.getVerts().setSize(this->oldSpriteSz);
 }

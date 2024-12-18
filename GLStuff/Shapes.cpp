@@ -13,6 +13,8 @@ Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertL
 	this->boundMax = glm::vec3(0.0f);
 	this->boundMin = glm::vec3(0.0f);
 	this->gravPower = Util::gravPower;
+	//this->colour = { 0,0,0 };
+	//this->oldColour = { 0,0,0 };
 }
 
 Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertLen, Shader& prog, bool collidable, std::vector<VertAttribute> vas, ShapeCollisionFuncT cFunc, bool isTextured, uint32_t texID, bool gravEnabled)
@@ -23,12 +25,15 @@ Shape::Shape(uint32_t vaoID, uint32_t vboID, float* startingVert, uint32_t vertL
 	this->boundMax = glm::vec3(0.0f);
 	this->boundMin = glm::vec3(0.0f);
 	this->gravPower = Util::gravPower;
+	//this->colour = { 0,0,0 };
+	//this->oldColour = { 0,0,0 };
 }
 
+static const std::vector<uint32_t> noTex{ 0 };
 void Shape::unbind() {
 
 	if (this->isTextured) {
-		this->getShader().setUniformVar("doTexturing", std::vector<uint32_t>{0});
+		this->getShader().setUniformVar("doTexturing", noTex);
 		for (auto tex : this->texes)
 			tex->unbind();
 	}
@@ -40,6 +45,7 @@ void Shape::unbind() {
 	this->isBound = false;
 }
 
+static const std::vector<uint32_t> usingTex{ 1 };
 void Shape::bind() {
 	glBindVertexArray(this->getVao());
 	glBindBuffer(GL_ARRAY_BUFFER, this->getVbo());
@@ -47,7 +53,8 @@ void Shape::bind() {
 
 	// If we are textured, indicate to the fragment shader to draw textures.
 	if (this->isTextured)
-		this->getShader().setUniformVar("doTexturing", std::vector<uint32_t>{1});
+		this->getShader().setUniformVar("doTexturing", usingTex);
+
 }
 
 void Shape::draw() {
@@ -80,8 +87,12 @@ void Shape::setupOnce() {
 	}
 
 	// If we supply a position vector, use it
-	glm::mat4 currModelMat = glm::translate(modelMat, position);
+	glm::mat4 currModelMat = glm::translate(modelMat, this->position);
 	this->getShader().setUniformVar("modelMat", &currModelMat);
+
+	//this->getShader().setUniformVar("aColour", this->colour);
+	//this->colour = this->oldColour;
+
 }
 void Shape::drawMany(std::vector<glm::vec3> &positions) {
 

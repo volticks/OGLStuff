@@ -270,6 +270,11 @@ public:
 	glm::vec3 boundMax, boundMin;
 	bool gravEnabled;
 	float gravPower;
+	// Stored colour of the object
+	//std::vector<float> colour;
+	// Stored OLD colour of the object
+	// for us to restore after drawing
+	//std::vector<float> oldColour;
 private:
 	uint32_t vaoID, vboID;
 	Verts verts;
@@ -280,7 +285,7 @@ private:
 	bool collidable;
 	// If the above is set, are we actually colliding?
 	bool colliding = false;
-	// TODO: Function called on collision - if enabled
+	// Function called on collision - if enabled
 	ShapeCollisionFuncT collisionFunc;
 };
 

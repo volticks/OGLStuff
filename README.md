@@ -19,13 +19,14 @@ Things that are here:
 - A lot of bloat which i will probably get around to cleaning up in future
 
 Things I want to add:
-- More precise collision, AABB is not very good at detecting *real* collisions if the shape isnt a perfect rectangle. 		
+- [ ] More precise collision, AABB is not very good at detecting *real* collisions if the shape isnt a perfect rectangle. 		
   Probably need to use more checks which will come after the AABB check to see if we actually collide.
-- Jumping and falling, will probably be inside the Player class
-- Gravity, for the above and for other stuff [X] Kinda done for shapes, need to do something about the glitchy textures tho.
-- Player collision with walls and other objects. Also actually finishing the player class.
-- Enemies, or entities other than the player
-- Sprites and model loading, all that jazz
-- Lighting - would be rlly rlly cool
-- Probably more that i cant think of.
+- [X] Jumping and falling, will probably be inside the Player class
+- [X] Gravity, for the above and for other stuff Kinda done for shapes, need to do something about the glitchy textures tho.
+- [X] Player collision with walls and other objects. 
+- [ ] Also actually finishing the player class.
+- [ ] Enemies, or entities other than the player
+- [ ] Sprites and model loading, all that jazz
+- [ ] Lighting - would be rlly rlly cool
+- [ ] Probably more that i cant think of.
 
