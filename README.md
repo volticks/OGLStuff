@@ -28,5 +28,6 @@ Things I want to add:
 - [ ] Enemies, or entities other than the player
 - [ ] Sprites and model loading, all that jazz
 - [ ] Lighting - would be rlly rlly cool
+- [ ] Use CMAKE
 - [ ] Probably more that i cant think of.
 

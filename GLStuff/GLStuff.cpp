@@ -237,7 +237,7 @@ void drawManyShapesAndRotate(Shape &s, int i) {
 }
 
 namespace Mouse {
-    float sensitivity = 10.0f;
+    float sensitivity = 12.0f;
     double lastX = WINDOW_W/2, lastY = WINDOW_H/2;
     float fov = glm::radians(45.0f);
     bool firstMouseInput = true;
@@ -484,9 +484,12 @@ void renderLoop(GLFWwindow *window) {
       // Try to set the uniform if it exists - if uniform isnt used to make any meaningful diff gl will optimize it
       // out so if ur seeing errs thats why.
       if (!s1.getShader().setUniformVar("doTexturing", std::vector<int>{0})) std::cout << "(Colfunc) cant disable texturing" << std::endl;
-      if (!s2.getShader().setUniformVar("useUniformColours", std::vector<int>{1})) std::cout << "(Colfunc) cant set useUniformColours" << std::endl;
-      //s2.colour = args;
-      if (!s2.getShader().setUniformVar("aColour", args)) std::cout << "(Colfunc) cant set aColour" << std::endl;
+      //if (!s2.getShader().setUniformVar("useUniformColours", std::vector<int>{1})) std::cout << "(Colfunc) cant set useUniformColours" << std::endl;
+      s2.useUniformColours = true;
+      s2.colour = glm::vec3(1.0f, 1.0f, 1.0f);
+      //s1.useUniformColours = true;
+      //s1.colour = glm::vec3(0.7f, 0.8f, 0.9f);
+      //if (!s2.getShader().setUniformVar("aColour", args)) std::cout << "(Colfunc) cant set aColour" << std::endl;
       };
 
   // Class for the texture
@@ -694,14 +697,18 @@ void renderLoop(GLFWwindow *window) {
 
     //w.getShader().setUniformVar("modelMat", glm::value_ptr(wallModel));
 
-    floorPlane.getShader().setUniformVar("useUniformColours", std::vector<int>{1});
-    floorPlane.getShader().setUniformVar("aColour", std::vector<float>{0.0f, 0.0f, 0.0f});
+    //floorPlane.getShader().setUniformVar("useUniformColours", std::vector<int>{1});
+    floorPlane.useUniformColours = true;
+    floorPlane.colour = glm::vec3(0.0f, 0.0f, 0.0f);
+    //floorPlane.getShader().setUniformVar("aColour", std::vector<float>{0.0f, 0.0f, 0.0f});
     floorPlane.draw();
 
     //q1.draw();
     // Reset after, just in case a collision was had
-    w.getShader().setUniformVar("useUniformColours", std::vector<int>{0});
-    t1.getShader().setUniformVar("useUniformColours", std::vector<int>{0});
+    //w.getShader().setUniformVar("useUniformColours", std::vector<int>{0});
+    //t1.getShader().setUniformVar("useUniformColours", std::vector<int>{0});
+    //w.useUniformColours = false;
+    t1.useUniformColours = false;
 
     for (int i = 0; i < 10; i++) {
         drawManyShapesAndRotate(t1, i);

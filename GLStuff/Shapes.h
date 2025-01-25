@@ -270,11 +270,10 @@ public:
 	glm::vec3 boundMax, boundMin;
 	bool gravEnabled;
 	float gravPower;
-	// Stored colour of the object
-	//std::vector<float> colour;
-	// Stored OLD colour of the object
-	// for us to restore after drawing
-	//std::vector<float> oldColour;
+
+	bool useUniformColours = false;
+	glm::vec3 colour = glm::vec3(0.0f, 0.0f, 0.0f);
+	//glm::vec3 oldColour;
 private:
 	uint32_t vaoID, vboID;
 	Verts verts;

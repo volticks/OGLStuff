@@ -77,7 +77,6 @@ void Shape::setupOnce() {
 	}
 	// Err checking
 	Util::handleGLErrs();
-	//glUseProgram(this->getProgID());
 	this->getShader().use();
 
 	// Redundant on projectile instances being managed by projectilemanager
@@ -90,8 +89,12 @@ void Shape::setupOnce() {
 	glm::mat4 currModelMat = glm::translate(modelMat, this->position);
 	this->getShader().setUniformVar("modelMat", &currModelMat);
 
-	//this->getShader().setUniformVar("aColour", this->colour);
-	//this->colour = this->oldColour;
+	this->getShader().setUniformVar("useUniformColours", std::vector<int>{this->useUniformColours});
+	// God awful temporary solution. Not as bad as you would think, this should be ok.
+	if (this->useUniformColours) {
+		this->getShader().setUniformVar("aColour", std::vector<float>{this->colour.x, this->colour.y, this->colour.z});
+		//this->colour = this->oldColour;
+	}
 
 }
 void Shape::drawMany(std::vector<glm::vec3> &positions) {
@@ -212,6 +215,8 @@ overlap_mask Shape::collidesWith(Shape &s) {
 		this->setColliding(isInside);
 		// Gotta deref this to pass as a ref.
 		this->collisionFunc(*this, s);
+		// Gotta remember we need to also call the collision function for the other obj
+		s.collisionFunc(s, *this);
 	}
 	return om;
 }

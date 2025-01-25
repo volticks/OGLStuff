@@ -29,7 +29,6 @@ class Shader {
 	std::string fShaderFname;
 
 	bool usable = false;
-
 public:
 
 	// Constructor doesnt compile shaders yet. just loads the stuff from file
@@ -192,4 +191,22 @@ public:
 		return true;
 
 	}
+};
+
+// Basic data structure for a uniform.
+template <typename T> struct UniformVar {
+	char* name;
+	std::vector<T> args;
+};
+// If we have more than one Shape using the same shader, we need a way to store differences in state, otherwise they will share uniforms and stuff, not ideal.
+// Need to integrate this into Shape and Shader somehow, since we wont always be using this if we want to for ex share uniforms for some reason, or only one
+// shape is using this shader.
+class UniformData {
+private:
+	std::vector<UniformData> uniforms;
+public:
+	// Set uniforms for the Shader s
+	void useUniforms(Shader& s);
+	void addUniform();
+
 };
